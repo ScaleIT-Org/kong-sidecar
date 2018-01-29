@@ -1,4 +1,4 @@
-FROM kong
+FROM kong:0.12.1
 
 ENV KONG_PROXY_ACCESS_LOG=/dev/stdout
 ENV KONG_ADMIN_ACCESS_LOG=/dev/stdout
