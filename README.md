@@ -96,5 +96,5 @@ volumes:
     - "./kong-apis.json:/config/kong-apis.json:ro"
 ```
 
-After starting the stack, you should be able to reach your app by accessing [localhost:8000].
+After starting the stack, you should be able to reach your app by accessing [localhost:8000](localhost:8000).
 API Settings should be edited in the "kong-apis.json" file, so the settings are persistent even after container recreation and volume removal.
