@@ -10,8 +10,14 @@ RUN wget https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -O /
 
 RUN mkdir /config
 
-COPY apply-config.sh /apply-config.sh
-COPY entrypoint.sh /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+COPY apply-config.sh /config/apply-config.sh
+COPY entrypoint.sh /config/entrypoint.sh
+
+WORKDIR /config
+
+RUN chown root apply-config.sh && chown root entrypoint.sh
+RUN chmod u+x apply-config.sh entrypoint.sh
+
+ENTRYPOINT ["/config/entrypoint.sh"]
 
 CMD ["/usr/local/openresty/nginx/sbin/nginx", "-c", "/usr/local/kong/nginx.conf", "-p", "/usr/local/kong/"]
