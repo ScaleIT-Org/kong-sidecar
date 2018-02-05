@@ -17,6 +17,7 @@ WORKDIR /config
 
 RUN chown root apply-config.sh && chown root entrypoint.sh
 RUN chmod u+x apply-config.sh entrypoint.sh
+RUN touch kong-apis.json
 
 ENTRYPOINT ["/config/entrypoint.sh"]
 
