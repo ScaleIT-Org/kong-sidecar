@@ -18,7 +18,7 @@ Occurs on docker for Windows or docker for Mac. Sometimes files are mounted as e
 It is recommended to use docker-compose which makes it more easy to handle configurations. Please view this docker-compose.yml snippet below:
 
 ```yaml
-version: '2.1' # replace by any version needed
+version: '2.1' # replace by any version needed (> 2.1)
 services:
 
   # <...> your main application/applications here
@@ -33,7 +33,7 @@ services:
       - db-data:/var/lib/postgresql/data
     networks:
       - internal
-    healthcheck:
+    healthcheck: # optional
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 10s
       timeout: 5s
@@ -59,7 +59,7 @@ services:
       - "./kong-apis.json:/config/kong-apis.json:ro"
     networks:
       - internal
-    healthcheck:
+    healthcheck: # optional
       test: ["CMD-SHELL", "curl -I -s -L http://127.0.0.1:8000 || exit 1"]
       interval: 5s
       retries: 10
@@ -82,19 +82,30 @@ API Settings have the following format:
 ```json
 [
     {
-        "name": "Example_Frontend",
-        "uris": "/example",
-        "upstream_url": "http://nginx",
+        "name": "MyApp",
+        "hosts": "app.example.com",
+        "uris": "/app",
+        "upstream_url": "http://<your_app_url>",
         "preserve_host": true
     }
 ]
 ```
+
+- "name": Specify any name you want.
+- "host" and "uris": Set one of these to point to your app.
+- "upstream_url": Your app's actual URL.
+- "preserve_host": Set this to forward the hostname entered by the client to your app.
+
+
 This is the same format as used by kong when applying settings by [API request](https://getkong.org/docs/0.12.x/admin-api/#add-api).
 You can create a json-file named "kong-apis.json" and apply the settings to the container by setting a volume
-```
+```yaml
 volumes:
     - "./kong-apis.json:/config/kong-apis.json:ro"
 ```
 
 After starting the stack, you should be able to reach your app by accessing http://localhost:8000.
 API Settings should be edited in the "kong-apis.json" file, so the settings are persistent even after container recreation and volume removal.
+
+
+Be alarmed that file mounts might lead to problems on Docker for Windows.
