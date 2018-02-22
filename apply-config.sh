@@ -1,4 +1,6 @@
-if [ -f /config/kong-apis.json ]; then
+apis_file=/config/api/kong-apis.json
+
+if [ -f $apis_file ]; then
     echo "APIs config file detected, applying..."
     
     echo "Waiting for kong..."
@@ -7,7 +9,7 @@ if [ -f /config/kong-apis.json ]; then
     done
     echo "Kong endpoint available"
 
-    for row in $(jq -c '.[]' /config/kong-apis.json); do
+    for row in $(jq -c '.[]' $apis_file); do
         # skip empty rows
         if [[ -z "${row// }" ]]; then
             continue

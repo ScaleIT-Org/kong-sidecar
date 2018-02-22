@@ -8,7 +8,7 @@ ENV KONG_ADMIN_ERROR_LOG=/dev/stderr
 # Install jq
 RUN wget https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -O /usr/bin/jq && chmod +x /usr/bin/jq
 
-RUN mkdir /config
+RUN mkdir -p /config/api
 
 COPY apply-config.sh /config/apply-config.sh
 COPY entrypoint.sh /config/entrypoint.sh
@@ -17,7 +17,6 @@ WORKDIR /config
 
 RUN chown root apply-config.sh && chown root entrypoint.sh
 RUN chmod u+x apply-config.sh entrypoint.sh
-RUN touch kong-apis.json
 
 ENTRYPOINT ["/config/entrypoint.sh"]
 

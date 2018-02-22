@@ -1,18 +1,12 @@
 # Kong Sidecar Image
+This image uses [Kong](https://konghq.com/)
+
 ## Introduction
-This Image is intended to be used as a so called sidecar image. This means a new kong instance is created for each app using kong in contrary to using kong as a centralized load balancer. This also means that the kong sidecar image has its own database and therefore user, security and other configuration which guarantees a lose coupling between an infrastructure's stacks. This is also shown as a graphical representation below:
+This Image is intended to be used as a socalled sidecar image. This means a new Kong instance is created for each app using kong in contrary to using Kong as a centralized load balancer. It also means that the Kong sidecar image has its own database and therefore user, security and other configuration which guarantees a lose coupling between an infrastructure's stacks. This is also shown as a graphical representation below:
 ![kong-sidecar](img/kong-sidecar.png)
 
-## Building the image
-Building the image is as easy as running `docker build -t teco/kong-sidecar:0.12.1-0 .` inside the directory where this repository is cloned. Be free to replace "0.12.1-0" with any tag that fits your needs.
 
-### Troubleshooting
-
-`standard_init_linux.go:185: exec user process caused "no such file or directory"`: Common problem on windows. Convert line endings in the `entrypoint.sh` and `apply-config.sh` file to LF and the error will disappear.
-
-
-"No kong-apis file found, skipping configuration." although file provided:
-Occurs on docker for Windows or docker for Mac. Sometimes files are mounted as empty directories. A restart of the daemon can help. Otherwise provide it via volume.
+To reduce complexity in usage when launching the stack, config files can be provided so you don't have to make API calls (or write your own scripts to do so).
 
 ## Use inside Your App
 It is recommended to use docker-compose which makes it more easy to handle configurations. Please view this docker-compose.yml snippet below:
@@ -43,7 +37,7 @@ services:
     image: teco/kong-sidecar:0.12.1-0
     depends_on:
       kong-database:
-        condition: service_healthy
+        condition: service_healthy # only if healthcheck is enabled
     restart: always
     ports:
       - 8000:8000
@@ -56,7 +50,7 @@ services:
     links:
       - kong-database:kong-database
     volumes:
-      - "./kong-apis.json:/config/kong-apis.json:ro"
+      - "./config:/config/apis"
     networks:
       - internal
     healthcheck: # optional
@@ -69,9 +63,11 @@ volumes:
 
 networks:
   internal:
+
+# <...>
 ```
 
-Consider to replace `internal` by your main application's internal network and set the newest version for `teco/kong-sidecar`.
+Consider replacing `internal` by your main application's internal network and set the newest version for `teco/kong-sidecar` (`latest` should not be used in production).
 
 
 It is recommended to replace `KONG_PG_PASSWORD` and `POSTGRES_PASSWORD` by a more secure passphrase.
@@ -98,14 +94,25 @@ API Settings have the following format:
 
 
 This is the same format as used by kong when applying settings by [API request](https://getkong.org/docs/0.12.x/admin-api/#add-api).
-You can create a json-file named "kong-apis.json" and apply the settings to the container by setting a volume
+You can create a json-file named "kong-apis.json" within a directory and apply the settings to the container by defining a bind mount for the folder:
 ```yaml
 volumes:
-    - "./kong-apis.json:/config/kong-apis.json:ro"
+    - "./<your_config_dir>:/config/apis"
 ```
 
 After starting the stack, you should be able to reach your app by accessing http://localhost:8000.
 API Settings should be edited in the "kong-apis.json" file, so the settings are persistent even after container recreation and volume removal.
 
+## Building the image
+Building the image is as easy as running `docker build -t teco/kong-sidecar:0.12.1-0 .` inside the directory where this repository is cloned. Be free to replace "0.12.1-0" with any tag that fits your needs.
 
-Be alarmed that file mounts might lead to problems on Docker for Windows.
+### Versioning
+Kong sidecar image version declarations follow the pattern `<kong-version>-<kong_sidecar_image-patch>` where `<kong-version>` is the semantic version of kong that is used and `<kong_sidecar_image-patch>` is a single number suggesting a patch respectively a fix for this image.
+
+### Troubleshooting
+
+`standard_init_linux.go:185: exec user process caused "no such file or directory"`: Common problem on windows. Convert line endings in the `entrypoint.sh` and `apply-config.sh` file to LF and the error will disappear.
+
+
+"No kong-apis file found, skipping configuration." although file provided:
+Occurs on docker for Windows or docker for Mac. Sometimes files are mounted as empty directories. A restart of the daemon can help. Otherwise provide it via volume.
