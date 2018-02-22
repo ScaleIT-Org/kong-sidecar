@@ -1,2 +1,5 @@
 # Set all line endings to LF
 * text eol=lf
+
+# Keep image as is
+*.png binary
