@@ -98,7 +98,7 @@ apis:
 - "host" and "uris": Set one of these (or both) to point to your app.
 - "upstream_url": Your app's actual URL to be reachable from Kong.
 - "preserve_host": Set this to forward the hostname entered by the client to your app.
-- "plugins": Apply [Kong-Plugins]()https://konghq.com/plugins/.
+- "plugins": Apply [Kong-Plugins](https://konghq.com/plugins/).
 
 #### Consumers
 You can also add consumers to your Kong-sidecar instance:
