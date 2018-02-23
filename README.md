@@ -1,9 +1,11 @@
 # Kong Sidecar Image
-This image uses [Kong](https://konghq.com/)
+This image uses [Kong](https://konghq.com/) along with [Kongfig](https://github.com/mybuilder/kongfig).
 
 ## Introduction
 This Image is intended to be used as a socalled sidecar image. This means a new Kong instance is created for each app using kong in contrary to using Kong as a centralized load balancer. It also means that the Kong sidecar image has its own database and therefore user, security and other configuration which guarantees a lose coupling between an infrastructure's stacks. This is also shown as a graphical representation below:
-![kong-sidecar](img/kong-sidecar.png)
+
+
+![kong-sidecar](https://raw.githubusercontent.com/ScaleIT-Org/kong-sidecar/master/img/kong-sidecar.png)
 
 
 To reduce complexity in usage when launching the stack, config files can be provided so you don't have to make API calls (or write your own scripts to do so).
@@ -69,39 +71,60 @@ networks:
 
 Consider replacing `internal` by your main application's internal network and set the newest version for `teco/kong-sidecar` (`latest` should not be used in production).
 
-
 It is recommended to replace `KONG_PG_PASSWORD` and `POSTGRES_PASSWORD` by a more secure passphrase.
 
-
 ### API Settings
+
+#### APIs
 API Settings have the following format:
-```json
-[
-    {
-        "name": "MyApp",
-        "hosts": "app.example.com",
-        "uris": "/app",
-        "upstream_url": "http://<your_app_url>",
-        "preserve_host": true
-    }
-]
+```yaml
+apis:
+  - name: MyApp # unique api name
+    attributes:
+      upstream_url: http://<your_app_url>
+      hosts: 
+        - app.example.com
+      uris:
+        - /app
+      preserve_host: true
+    plugins:
+      - name: rate-limiting # kong plugin name
+        attributes: # the plugin attributes
+          username: # optional, to reference a consumer, same as consumer_id in kong documentation
+          config:
 ```
 
-- "name": Specify any name you want.
-- "host" and "uris": Set one of these to point to your app.
-- "upstream_url": Your app's actual URL.
+- "name": Specify your app's name.
+- "host" and "uris": Set one of these (or both) to point to your app.
+- "upstream_url": Your app's actual URL to be reachable from Kong.
 - "preserve_host": Set this to forward the hostname entered by the client to your app.
+- "plugins": Apply [Kong-Plugins]()https://konghq.com/plugins/.
 
+#### Consumers
+You can also add consumers to your Kong-sidecar instance:
+```yaml
+consumers:
+  - username: client-app
+    credentials:
+      - name: key-auth # name of a specific credentials plugin
+        attributes: # credential config attributes
+```
 
-This is the same format as used by kong when applying settings by [API request](https://getkong.org/docs/0.12.x/admin-api/#add-api).
-You can create a json-file named "kong-apis.json" within a directory and apply the settings to the container by defining a bind mount for the folder:
+#### Applying the config
+
+You can create YAML files with names ending with `.yml` within any directory and define the settings to the container by defining a bind mount for the folder:
 ```yaml
 volumes:
     - "./<your_config_dir>:/config/apis"
 ```
+Kong-sidecar will look for all YAML-files, like `apis.yml` or `consumers.yml`, in `/config/apis` and apply them.
 
-After starting the stack, you should be able to reach your app by accessing http://localhost:8000.
-API Settings should be edited in the "kong-apis.json" file, so the settings are persistent even after container recreation and volume removal.
+Optionally you can also define JSON files, however YAML is recommended for a better readability.
+
+After starting the stack, you should be able to reach your app by accessing http://localhost:8000/app.
+API Settings should be edited in your `apis.yaml` file (or however you named it), so the settings are persistent even after container recreation and volume removal.
+
+For a more advanced example go to [Kongfig on Github](https://github.com/mybuilder/kongfig).
 
 ## Building the image
 Building the image is as easy as running `docker build -t teco/kong-sidecar:0.12.1-0 .` inside the directory where this repository is cloned. Be free to replace "0.12.1-0" with any tag that fits your needs.
@@ -112,7 +135,6 @@ Kong sidecar image version declarations follow the pattern `<kong-version>-<kong
 ### Troubleshooting
 
 `standard_init_linux.go:185: exec user process caused "no such file or directory"`: Common problem on windows. Convert line endings in the `entrypoint.sh` and `apply-config.sh` file to LF and the error will disappear.
-
 
 "No kong-apis file found, skipping configuration." although file provided:
 Occurs on docker for Windows or docker for Mac. Sometimes files are mounted as empty directories. A restart of the daemon can help. Otherwise provide it via volume.
