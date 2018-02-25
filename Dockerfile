@@ -6,7 +6,8 @@ ENV KONG_PROXY_ERROR_LOG=/dev/stderr
 ENV KONG_ADMIN_ERROR_LOG=/dev/stderr
 
 # Install npm
-RUN apk add --no-cache nodejs
+RUN curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -
+RUN yum install -y nodejs && yum clean all
 # Kongfig
 RUN npm install -g kongfig
 

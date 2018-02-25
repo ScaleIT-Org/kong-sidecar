@@ -5,8 +5,8 @@ ENV KONG_ADMIN_ACCESS_LOG=/dev/stdout
 ENV KONG_PROXY_ERROR_LOG=/dev/stderr
 ENV KONG_ADMIN_ERROR_LOG=/dev/stderr
 
-# Install npm, curl not included in alpine
-RUN apk add --no-cache nodejs curl
+# Install npm and curl which not included in alpine
+RUN apk add --no-cache curl nodejs nodejs-npm
 # Kongfig
 RUN npm install -g kongfig
 
