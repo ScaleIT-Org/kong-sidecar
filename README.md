@@ -10,7 +10,7 @@ This Image is intended to be used as a socalled sidecar image. This means a new 
 
 To reduce complexity in usage when launching the stack, config files can be provided so you don't have to make API calls (or write your own scripts to do so).
 
-## Use inside Your App
+## Use With Your App
 It is recommended to use docker-compose which makes it more easy to handle configurations. Please view this docker-compose.yml snippet below:
 
 ```yaml
@@ -101,7 +101,7 @@ apis:
 - "plugins": Apply [Kong-Plugins](https://konghq.com/plugins/).
 
 #### Consumers
-You can also add consumers to your Kong-sidecar instance:
+You can also add [consumers](https://getkong.org/docs/0.4.x/getting-started/adding-consumers/) to your Kong-sidecar instance:
 ```yaml
 consumers:
   - username: client-app
