@@ -7,9 +7,9 @@ ENV KONG_ADMIN_ACCESS_LOG=/dev/stdout
 ENV KONG_PROXY_ERROR_LOG=/dev/stderr
 ENV KONG_ADMIN_ERROR_LOG=/dev/stderr
 
-# Install npm
+# Install npm and crypto tools
 RUN curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -
-RUN yum install -y nodejs && yum clean all
+RUN yum install -y nodejs unzip openssl openssl-devel gcc && yum clean all
 # Kongfig
 RUN npm install -g kongfig
 
@@ -25,13 +25,9 @@ COPY entrypoint.sh /config/entrypoint.sh
 RUN chown root apply-config.sh && chown root entrypoint.sh
 RUN chmod u+x apply-config.sh entrypoint.sh
 
-# Install external OAuth custom kong plugin
-ENV EXTERNAL_OAUTH_PLUGIN_PATH external-oauth-plugin
-ENV PLUGIN_RAW_URL https://raw.githubusercontent.com/mogui/kong-external-oauth/master/src
-RUN mkdir external-oauth-plugin
-RUN curl $PLUGIN_RAW_URL/access.lua -o ${EXTERNAL_OAUTH_PLUGIN_PATH}/access.lua && \
-    curl $PLUGIN_RAW_URL/handler.lua -o ${EXTERNAL_OAUTH_PLUGIN_PATH}/handller.lua && \
-    curl $PLUGIN_RAW_URL/schema.lua -o ${EXTERNAL_OAUTH_PLUGIN_PATH}/schema.lua
+# Install external OAuth custom kong plugin and crypto plugin
+RUN luarocks install --verbose luacrypto
+RUN luarocks install --verbose external-oauth
 
 ENTRYPOINT ["/config/entrypoint.sh"]
 
