@@ -13,31 +13,6 @@ RUN yum install -y nodejs && yum clean all
 # Kongfig
 RUN npm install -g kongfig
 
-# Build Luarocks for installing plugins
-ENV LUAROCKS_VERSION 2.4.2
-ENV LUAROCKS_INSTALL luarocks-$LUAROCKS_VERSION
-ENV TMP_LOC /tmp/luarocks
-RUN curl -OL \
-    https://luarocks.org/releases/l${LUAROCKS_INSTALL}.tar.gz
-RUN tar xzf $LUAROCKS_INSTALL.tar.gz && \
-    mv $LUAROCKS_INSTALL $TMP_LOC && \
-    rm $LUAROCKS_INSTALL.tar.gz
-
-WORKDIR $TMP_LOC
-RUN ./configure \
-  --with-lua=$WITH_LUA \
-  --with-lua-include=$LUA_INCLUDE \
-  --with-lua-lib=$LUA_LIB
-
-RUN make build
-RUN make install
-
-WORKDIR /
-RUN rm $TMP_LOC -rf
-
-# Install external OAuth custom kong plugin
-RUN luarocks install external-oauth
-
 # Create the config folder
 RUN mkdir -p /config/api
 WORKDIR /config
@@ -49,6 +24,14 @@ COPY entrypoint.sh /config/entrypoint.sh
 
 RUN chown root apply-config.sh && chown root entrypoint.sh
 RUN chmod u+x apply-config.sh entrypoint.sh
+
+# Install external OAuth custom kong plugin
+ENV EXTERNAL_OAUTH_PLUGIN_PATH external-oauth-plugin
+ENV PLUGIN_RAW_URL https://raw.githubusercontent.com/mogui/kong-external-oauth/master/src
+RUN mkdir external-oauth-plugin
+RUN curl $PLUGIN_RAW_URL/access.lua -o /${EXTERNAL_OAUTH_PLUGIN_PATH}/access.lua && \
+    curl $PLUGIN_RAW_URL/handler.lua -o /${EXTERNAL_OAUTH_PLUGIN_PATH}/handller.lua && \
+    curl $PLUGIN_RAW_URL/schema.lua -o /${EXTERNAL_OAUTH_PLUGIN_PATH}/schema.lua
 
 ENTRYPOINT ["/config/entrypoint.sh"]
 
