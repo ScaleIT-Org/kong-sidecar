@@ -29,9 +29,9 @@ RUN chmod u+x apply-config.sh entrypoint.sh
 ENV EXTERNAL_OAUTH_PLUGIN_PATH external-oauth-plugin
 ENV PLUGIN_RAW_URL https://raw.githubusercontent.com/mogui/kong-external-oauth/master/src
 RUN mkdir external-oauth-plugin
-RUN curl $PLUGIN_RAW_URL/access.lua -o /${EXTERNAL_OAUTH_PLUGIN_PATH}/access.lua && \
-    curl $PLUGIN_RAW_URL/handler.lua -o /${EXTERNAL_OAUTH_PLUGIN_PATH}/handller.lua && \
-    curl $PLUGIN_RAW_URL/schema.lua -o /${EXTERNAL_OAUTH_PLUGIN_PATH}/schema.lua
+RUN curl $PLUGIN_RAW_URL/access.lua -o ${EXTERNAL_OAUTH_PLUGIN_PATH}/access.lua && \
+    curl $PLUGIN_RAW_URL/handler.lua -o ${EXTERNAL_OAUTH_PLUGIN_PATH}/handller.lua && \
+    curl $PLUGIN_RAW_URL/schema.lua -o ${EXTERNAL_OAUTH_PLUGIN_PATH}/schema.lua
 
 ENTRYPOINT ["/config/entrypoint.sh"]
 
