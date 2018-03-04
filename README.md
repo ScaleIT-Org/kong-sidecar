@@ -1,4 +1,4 @@
-# Kong Sidecar Image
+# Kong Sidecar Image ![License](https://img.shields.io/github/license/ScaleIT-Org/kong-sidecar.svg) ![Docker Pulls](https://img.shields.io/docker/pulls/scaleit/kong-sidecar.svg) ![Docker Build Status](https://img.shields.io/docker/build/scaleit/kong-sidecar.svg)
 This image uses [Kong](https://konghq.com/) along with [Kongfig](https://github.com/mybuilder/kongfig).
 
 ## Introduction
@@ -36,7 +36,7 @@ services:
       retries: 5
 
   kong:
-    image: teco/kong-sidecar:0.12.1-0
+    image: scaleit/kong-sidecar:0.12.1-1
     depends_on:
       kong-database:
         condition: service_healthy # only if healthcheck is enabled
@@ -69,7 +69,7 @@ networks:
 # <...>
 ```
 
-Consider replacing `internal` by your main application's internal network and set the newest version for `teco/kong-sidecar` (`latest` should not be used in production).
+Consider replacing `internal` by your main application's internal network and set the newest version for `scaleit/kong-sidecar` (`latest` should not be used in production).
 
 It is recommended to replace `KONG_PG_PASSWORD` and `POSTGRES_PASSWORD` by a more secure passphrase.
 
