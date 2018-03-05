@@ -10,6 +10,8 @@ This Image is intended to be used as a socalled sidecar image. This means a new 
 
 To reduce complexity in usage when launching the stack, config files can be provided so you don't have to make API calls (or write your own scripts to do so).
 
+Check out the example app here: https://github.com/ScaleIT-Org/sapp-example-oauth-ready-app
+
 ## Use With Your App
 It is recommended to use docker-compose which makes it more easy to handle configurations. Please view this docker-compose.yml snippet below:
 
