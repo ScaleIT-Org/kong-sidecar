@@ -38,7 +38,7 @@ services:
       retries: 5
 
   kong:
-    image: scaleit/kong-sidecar:0.12.1-1
+    image: scaleit/kong-sidecar:0.12.1-2
     depends_on:
       kong-database:
         condition: service_healthy # only if healthcheck is enabled
@@ -71,7 +71,7 @@ networks:
 # <...>
 ```
 
-Consider replacing `internal` by your main application's internal network and set the newest version for `scaleit/kong-sidecar` (`latest` should not be used in production).
+Consider replacing `internal` by your main application's internal network and set the newest version for `scaleit/kong-sidecar` (`latest` should not be used in production). There is also an *alpine* variant of this image.
 
 It is recommended to replace `KONG_PG_PASSWORD` and `POSTGRES_PASSWORD` by a more secure passphrase.
 
@@ -153,7 +153,15 @@ Kong sidecar image version declarations follow the pattern `<kong-version>-<kong
 
 ### Troubleshooting
 
-`standard_init_linux.go:185: exec user process caused "no such file or directory"`: Common problem on windows. Convert line endings in the `entrypoint.sh` and `apply-config.sh` file to LF and the error will disappear.
+- `standard_init_linux.go:185: exec user process caused "no such file or directory"`: Common problem on windows. Convert line endings in the `entrypoint.sh` and `apply-config.sh` file to LF and the error will disappear.
 
-"No kong-apis file found, skipping configuration." although file provided:
+- "No kong-apis file found, skipping configuration." although file provided:
 Occurs on docker for Windows or docker for Mac. Sometimes files are mounted as empty directories. A restart of the daemon can help. Otherwise provide it via volume.
+
+- Nginx Logs show `upstream sent too big header while reading response header from upstream` even if proxy buffer is disabled:
+Occurs if the `external-oauth` plugin is enabled and the user is redirected to the OAuth provider (or vice versa). OAuth2 fills the HTTP-header resulting in a header size which is too big to handle by the reverse proxy. Try to increase your proxy buffer as following:
+```
+proxy_buffer_size 16k;
+proxy_buffers 8 8k;
+proxy_busy_buffers_size 16k;
+```
