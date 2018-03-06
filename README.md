@@ -1,5 +1,5 @@
 # Kong Sidecar Image ![License](https://img.shields.io/github/license/ScaleIT-Org/kong-sidecar.svg) ![Docker Pulls](https://img.shields.io/docker/pulls/scaleit/kong-sidecar.svg) ![Docker Build Status](https://img.shields.io/docker/build/scaleit/kong-sidecar.svg)
-This image uses [Kong](https://konghq.com/) along with [Kongfig](https://github.com/mybuilder/kongfig).
+This image uses [Kong](https://konghq.com/) along with [Kongfig](https://github.com/mybuilder/kongfig) and the [External OAuth Plugin](https://github.com/mogui/kong-external-oauth).
 
 ## Introduction
 This Image is intended to be used as a socalled sidecar image. This means a new Kong instance is created for each app using kong in contrary to using Kong as a centralized load balancer. It also means that the Kong sidecar image has its own database and therefore user, security and other configuration which guarantees a lose coupling between an infrastructure's stacks. This is also shown as a graphical representation below:
@@ -101,6 +101,23 @@ apis:
 - "upstream_url": Your app's actual URL to be reachable from Kong.
 - "preserve_host": Set this to forward the hostname entered by the client to your app.
 - "plugins": Apply [Kong-Plugins](https://konghq.com/plugins/).
+
+Example for using the [External OAuth Plugin](https://github.com/mogui/kong-external-oauth):
+```yaml
+# <...> API config
+    plugins:
+      - name: external-oauth
+        attributes:
+          config.authorize_url: https://oauth.something.net/openid-connect/authorize
+          config.scope: openid+profile+email
+          config.token_url: https://oauth.something.net/openid-connect/token
+          config.client_id: SOME_CLEINT_ID
+          config.client_secret: SOME_SECRET_KEY
+          config.user_url: https://oauth.something.net/openid-connect/userinfo
+          config.user_keys: email,name,s
+          config.hosted_domain: mycompany.c
+          config.email_key: email
+```
 
 #### Consumers
 You can also add [consumers](https://getkong.org/docs/0.4.x/getting-started/adding-consumers/) to your Kong-sidecar instance:
