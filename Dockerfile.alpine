@@ -6,19 +6,24 @@ ENV KONG_PROXY_ERROR_LOG=/dev/stderr
 ENV KONG_ADMIN_ERROR_LOG=/dev/stderr
 
 # Install npm and curl which not included in alpine
-RUN apk add --no-cache curl nodejs nodejs-npm
+RUN apk add --no-cache curl nodejs nodejs-npm unzip openssl openssl-dev gcc libc-dev
 # Kongfig
 RUN npm install -g kongfig
 
 RUN mkdir -p /config/api
+WORKDIR /config
 
+# Copy the config files
+COPY kong.conf /etc/kong.conf
 COPY apply-config.sh /config/apply-config.sh
 COPY entrypoint.sh /config/entrypoint.sh
 
-WORKDIR /config
-
 RUN chown root apply-config.sh && chown root entrypoint.sh
 RUN chmod u+x apply-config.sh entrypoint.sh
+
+# Install external OAuth custom kong plugin and crypto plugin
+RUN luarocks install --verbose luacrypto
+RUN luarocks install --verbose external-oauth
 
 ENTRYPOINT ["/config/entrypoint.sh"]
 
