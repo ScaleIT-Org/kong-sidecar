@@ -1,5 +1,7 @@
 FROM kong:0.12.1-alpine
 
+LABEL KONG_VERSION=0.12.1
+
 ENV KONG_PROXY_ACCESS_LOG=/dev/stdout
 ENV KONG_ADMIN_ACCESS_LOG=/dev/stdout
 ENV KONG_PROXY_ERROR_LOG=/dev/stderr
