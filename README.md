@@ -1,4 +1,4 @@
-# Kong Sidecar Image ![License](https://img.shields.io/github/license/ScaleIT-Org/kong-sidecar.svg) ![Docker Pulls](https://img.shields.io/docker/pulls/scaleit/kong-sidecar.svg) ![Docker Build Status](https://img.shields.io/docker/build/scaleit/kong-sidecar.svg)
+# Kong Sidecar Image ![License](https://img.shields.io/github/license/ScaleIT-Org/kong-sidecar.svg?link=https://github.com/ScaleIT-Org/kong-sidecar/blob/master/LICENSE) ![Docker Pulls](https://img.shields.io/docker/pulls/scaleit/kong-sidecar.svg?link=https://hub.docker.com/r/scaleit/kong-sidecar/) ![Docker Build Status](https://img.shields.io/docker/build/scaleit/kong-sidecar.svg?link=https://hub.docker.com/r/scaleit/kong-sidecar/tags/)
 This image uses [Kong](https://konghq.com/) along with [Kongfig](https://github.com/mybuilder/kongfig) and the [External OAuth Plugin](https://github.com/mogui/kong-external-oauth).
 
 ## Introduction
