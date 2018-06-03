@@ -8,7 +8,7 @@ echo "Waiting for kong..."
 echo "Kong endpoint available"
 
 echo "Applying kong config files..."
-for file in ${API_DIR}*.{yml,yaml,json}; do
+for file in ${API_DIR}*.yml ${API_DIR}*.yaml ${API_DIR}*.json; do
     [ -e "$file" ] || continue
 
     kongfig apply --path $file --host $ADMIN_API_URL
