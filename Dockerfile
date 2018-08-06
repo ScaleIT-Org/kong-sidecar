@@ -1,4 +1,4 @@
-FROM kong:0.13.1-centos
+FROM kong:0.14.0-centos
 
 LABEL KONG_VERSION=0.13.1
 
