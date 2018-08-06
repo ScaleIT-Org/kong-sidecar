@@ -22,7 +22,7 @@ services:
   # <...> your main application/applications here
 
   kong-database:
-    image: postgres:9.4-alpine
+    image: postgres:10.4-alpine # kong requires >9.5
     environment:
       - POSTGRES_USER=kong
       - POSTGRES_DB=kong
@@ -38,7 +38,7 @@ services:
       retries: 5
 
   kong:
-    image: scaleit/kong-sidecar:0.12.1-2
+    image: scaleit/kong-sidecar:0.14.0-0
     depends_on:
       kong-database:
         condition: service_healthy # only if healthcheck is enabled
